@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: postgres-webchat
+    image: postgres:14.0-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=postgress
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - ${TYPEORM_PORT}:${TYPEORM_PORT}
