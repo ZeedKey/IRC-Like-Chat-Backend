@@ -12,7 +12,10 @@ export class AuthService {
   ) {}
 
   async login(userInput: CreateUserInput) {
-    const user = await this.usersService.getUsers({ login: userInput.login });
+    const user = await this.usersService.getUsers({
+      login: userInput.login,
+      isOnline: false,
+    });
 
     if (!user.length) {
       throw new HttpException(
@@ -38,7 +41,10 @@ export class AuthService {
   }
 
   async register(userInput: CreateUserInput) {
-    const user = await this.usersService.getUsers({ login: userInput.login });
+    const user = await this.usersService.getUsers({
+      login: userInput.login,
+      isOnline: false,
+    });
 
     if (user.length) {
       throw new HttpException(

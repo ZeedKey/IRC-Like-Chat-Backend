@@ -32,9 +32,26 @@ type MessageEntity {
 type Mutation {
   createMessage(message: CreateMessageInput!): MessageEntity!
   register(user: CreateUserInput!): String!
+  setUserOnline(isOnlineInput: SetUserOnlineInput!): UserEntity!
 }
 
 type Query {
   getMessages(filter: FilterMessageInput!, page: Float!): [MessageEntity!]!
   login(user: CreateUserInput!): String!
+}
+
+input SetUserOnlineInput {
+  id: Float!
+  isOnline: Boolean!
+}
+
+type Subscription {
+  statusChanged(payload: SetUserOnlineInput!): UserEntity!
+}
+
+type UserEntity {
+  id: ID!
+  isOnline: Boolean!
+  login: String!
+  password: String!
 }

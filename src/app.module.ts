@@ -19,7 +19,7 @@ import { AuthModule } from './auth/auth.module';
         //TODO: ENV
         type: 'postgres',
         username: 'postgres',
-        password: '1234',
+        password: '1111',
         database: 'postgres',
         port: 5432,
         entities: [__dirname + 'dist/**/*.entity{.ts,.js}'],
@@ -34,6 +34,7 @@ import { AuthModule } from './auth/auth.module';
       autoSchemaFile: 'schema.gql',
       playground: true,
       sortSchema: true,
+      installSubscriptionHandlers: true,
     }),
     AuthModule,
     UsersModule,

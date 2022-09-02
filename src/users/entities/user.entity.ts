@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @ObjectType()
 @Entity()
 export class UserEntity {
-  @Field(()=> ID)
+  @Field(() => ID)
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -15,4 +15,8 @@ export class UserEntity {
   @Field()
   @Column()
   password: string;
+
+  @Field()
+  @Column()
+  isOnline: boolean;
 }
