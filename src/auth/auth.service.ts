@@ -13,8 +13,9 @@ export class AuthService {
 
   async login(userInput: CreateUserInput) {
     const user = await this.usersService.getUsers({
+      id: undefined,
       login: userInput.login,
-      isOnline: false,
+      isOnline: undefined,
     });
 
     if (!user.length) {
@@ -42,8 +43,9 @@ export class AuthService {
 
   async register(userInput: CreateUserInput) {
     const user = await this.usersService.getUsers({
+      id: undefined,
       login: userInput.login,
-      isOnline: false,
+      isOnline: undefined,
     });
 
     if (user.length) {
@@ -58,10 +60,9 @@ export class AuthService {
 
     const createdUser = await this.usersService.createUser({
       ...userInput,
-      password: userInput.password,
     });
 
-    return this.getToken(createdUser);
+    return this.getToken({ ...createdUser });
   }
 
   async getToken(userInput: UserEntity) {
