@@ -22,6 +22,12 @@ input FilterMessageInput {
   content: String
 }
 
+input FilterUserInput {
+  id: Float
+  isOnline: Boolean
+  login: String
+}
+
 type MessageEntity {
   author: String!
   content: String!
@@ -32,21 +38,23 @@ type MessageEntity {
 type Mutation {
   createMessage(message: CreateMessageInput!): MessageEntity!
   register(user: CreateUserInput!): String!
-  setUserOnline(isOnlineInput: SetUserOnlineInput!): UserEntity!
+  setUserOnline(user: SetOnlineInput!): UserEntity!
 }
 
 type Query {
   getMessages(filter: FilterMessageInput!, page: Float!): [MessageEntity!]!
+  getUsers(filter: FilterUserInput!): [UserEntity!]!
   login(user: CreateUserInput!): String!
 }
 
-input SetUserOnlineInput {
+input SetOnlineInput {
   id: Float!
   isOnline: Boolean!
 }
 
 type Subscription {
-  statusChanged(payload: SetUserOnlineInput!): UserEntity!
+  onMessageReceived: MessageEntity!
+  onUserJoined: UserEntity!
 }
 
 type UserEntity {

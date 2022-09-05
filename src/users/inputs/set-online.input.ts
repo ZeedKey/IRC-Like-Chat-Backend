@@ -1,10 +1,10 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 
 @InputType()
-export class CreateUserInput {
+export class SetOnlineInput {
   @Field()
-  login: string;
+  id: number;
 
   @Field()
-  password: string;
+  isOnline: boolean;
 }

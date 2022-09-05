@@ -17,6 +17,6 @@ export class UserEntity {
   password: string;
 
   @Field()
-  @Column()
+  @Column({ default: false })
   isOnline: boolean;
 }
