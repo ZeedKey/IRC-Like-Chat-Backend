@@ -1,5 +1,6 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
+import { PubSub } from 'graphql-subscriptions';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MessageEntity } from './entities/message.entity';
 import { CreateMessageInput } from './inputs/create-message.input';
@@ -8,14 +9,23 @@ import { MessagesService } from './messages.service';
 
 @Resolver('Message')
 export class MessagesResolver {
-  constructor(private readonly messageService: MessagesService) {}
+  private pubsub: PubSub;
+  constructor(private readonly messageService: MessagesService) {
+    this.pubsub = new PubSub();
+  }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Mutation(() => MessageEntity)
   async createMessage(
-    @Args('message') createMessageInput: CreateMessageInput,
+    @Args('message') messageInput: CreateMessageInput,
   ): Promise<MessageEntity> {
-    return await this.messageService.createMessage(createMessageInput);
+    const createdMessage = await this.messageService.createMessage(
+      messageInput,
+    );
+    this.pubsub.publish('onMessageReceived', {
+      onMessageReceived: { ...createdMessage },
+    });
+    return createdMessage;
   }
 
   @Query(() => [MessageEntity])
@@ -27,5 +37,10 @@ export class MessagesResolver {
       { ...filterMessageInput },
       page,
     );
+  }
+
+  @Subscription(() => MessageEntity)
+  onMessageReceived() {
+    return this.pubsub.asyncIterator('onMessageReceived');
   }
 }
