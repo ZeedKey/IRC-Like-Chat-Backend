@@ -1,28 +1,35 @@
+import { Query } from '@nestjs/graphql';
 import { Args, Mutation, Subscription } from '@nestjs/graphql';
 import { Resolver } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 import { UserEntity } from './entities/user.entity';
-import { SetUserOnlineInput } from './inputs/set-user-online.input';
+import { FilterUserInput } from './inputs/filter-user.input';
+import { SetOnlineInput } from './inputs/set-online.input';
 import { UsersService } from './users.service';
 
 @Resolver()
 export class UsersResolver {
-  private pubSub: PubSub;
+  private pubsub: PubSub;
   constructor(private readonly usersService: UsersService) {
-    this.pubSub = new PubSub();
+    this.pubsub = new PubSub();
+  }
+
+  @Query(() => [UserEntity])
+  async getUsers(
+    @Args('filter') filter: FilterUserInput,
+  ): Promise<UserEntity[]> {
+    return this.usersService.getUsers({ ...filter });
   }
 
   @Mutation(() => UserEntity)
-  async setUserOnline(@Args('isOnlineInput') payloadInput: SetUserOnlineInput) {
-    const user = await this.usersService.setUserOnline({ ...payloadInput });
-    this.pubSub.publish('statusChanged', { ...payloadInput });
-    return user;
+  async setUserOnline(@Args('user') user: SetOnlineInput): Promise<UserEntity> {
+    const updatedUser = await this.usersService.setUserOnline({ ...user });
+    this.pubsub.publish('onUserJoined', { onUserJoined: { ...updatedUser } });
+    return updatedUser;
   }
 
-  @Subscription(() => UserEntity, {
-    filter: (payload, variables) => payload.id === variables.id,
-  })
-  async statusChanged(@Args('payload') payload: SetUserOnlineInput) {
-    console.log('here!');
+  @Subscription(() => UserEntity)
+  onUserJoined() {
+    return this.pubsub.asyncIterator('onUserJoined');
   }
 }
