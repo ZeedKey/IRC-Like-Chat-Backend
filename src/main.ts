@@ -11,7 +11,7 @@ async function bootstrap() {
     alternative: config.get('API_PORT_ALTERNATIVE'),
   };
 
-  await app.listen(3000, () =>
+  await app.listen(3001, () =>
     console.log('App has successfuly started!'),
   );
 }
