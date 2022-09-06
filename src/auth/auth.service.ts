@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ApolloError } from 'apollo-server-core';
 import { UserEntity } from '../users/entities/user.entity';
 import { CreateUserInput } from '../users/inputs/create-user.input';
 import { UsersService } from '../users/users.service';
@@ -18,25 +19,18 @@ export class AuthService {
       isOnline: undefined,
     });
 
-    if (!user.length) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'User with the specified login doesn`t exist',
-        },
-        HttpStatus.BAD_REQUEST,
+    if (!user.length)
+      throw new ApolloError(
+        'User with the specified login doesn`t exist',
+        'BAD_USER_INPUT',
       );
-    }
 
     if (userInput.password === user[0].password) {
       return await this.getToken({ ...user[0] });
     } else {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'The specified password is incorrect',
-        },
-        HttpStatus.BAD_REQUEST,
+      throw new ApolloError(
+        'The specified password is incorrect',
+        'BAD_USER_INPUT',
       );
     }
   }
@@ -48,15 +42,11 @@ export class AuthService {
       isOnline: undefined,
     });
 
-    if (user.length) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'User with the specified login already exists',
-        },
-        HttpStatus.BAD_REQUEST,
+    if (user.length)
+      throw new ApolloError(
+        'User with the specified login already exists',
+        'BAD_USER_INPUT',
       );
-    }
 
     const createdUser = await this.usersService.createUser({
       ...userInput,

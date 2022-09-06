@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ApolloError } from 'apollo-server-core';
 import { Like, Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
 import { CreateUserInput } from './inputs/create-user.input';
@@ -26,15 +27,11 @@ export class UsersService {
   async setUserOnline(userInput: SetOnlineInput): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id: userInput.id });
 
-    if (!user) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'User with the specified id doesn`t exist',
-        },
-        HttpStatus.BAD_REQUEST,
+    if (!user)
+      throw new ApolloError(
+        'User with the specified id doesn`t exist',
+        'BAD_USER_INPUT',
       );
-    }
 
     return await this.userRepository.save({
       ...user,
